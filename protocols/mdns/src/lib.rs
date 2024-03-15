@@ -47,10 +47,20 @@ pub use crate::behaviour::async_io;
 #[cfg(feature = "tokio")]
 pub use crate::behaviour::tokio;
 
+#[macro_use]
+mod macros;
+
 /// The DNS service name for all libp2p peers used to query for addresses.
-const SERVICE_NAME: &[u8] = b"_p2p._udp.local";
+const _SERVICE_NAME: &str = if let Some(service_name) = option_env!("LIBP2P_MDNS_SERVICE_NAME") {
+    service_name
+} else {
+    "_p2p._udp.local"
+};
+const SERVICE_NAME: &[u8] = _SERVICE_NAME.as_bytes();
+
 /// `SERVICE_NAME` as a Fully Qualified Domain Name.
-const SERVICE_NAME_FQDN: &str = "_p2p._udp.local.";
+const SERVICE_NAME_FQDN: &str = concat_str!(_SERVICE_NAME, ".");
+
 /// The meta query for looking up the `SERVICE_NAME`.
 const META_QUERY_SERVICE: &[u8] = b"_services._dns-sd._udp.local";
 /// `META_QUERY_SERVICE` as a Fully Qualified Domain Name.
